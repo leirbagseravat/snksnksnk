@@ -5,19 +5,13 @@ import Graphics.Gloss
 import Graphics.Gloss.Interface.Pure.Game
 import Debug.Trace
 
-window :: Display
-window = InWindow "Haskell Snake Game" (640, 480) (100, 100)
-
-background :: Color
-background = white
-
 render :: GameState -> Picture
 render gameState = pictures $   [ fillRectangle black (16, 0) (640, 20)
                                 , fillRectangle black (16, 24) (640, 20)
                                 , fillRectangle black (0, 12) (20, 480)
                                 , fillRectangle black (32, 12) (20, 480) ] ++
                                   fmap (convertToPicture black) snake ++
-                                  fmap (convertToPicture blue) [food] ++
+                                  fmap (convertToPicture green) [food] ++
                                   gameOverPicture
     where   snake = getSnake gameState
             food = getFood gameState
@@ -29,25 +23,25 @@ render gameState = pictures $   [ fillRectangle black (16, 0) (640, 20)
                                                     rectangleSolid w h
             toFloat (x, y) = (fromIntegral x, fromIntegral y)
             gameOverPicture =   if (isGameOver gameState)
-                                then [  color blue $
+                                then [  color green $
                                         translate (-200) (0) $
                                         scale 0.5 0.5 $
-                                        text "GAME OVER"
-                                     ,  color blue $
+                                        text "FIM DE JOGO"
+                                     ,  color green $
                                         translate (-175) (-50) $
-                                        scale 0.2 0.2 $
-                                        text "Press SPACE to try again." ]
+                                        scale 0.15 0.15 $
+                                        text "Pressione espaco para tentar novamente." ]
                                 else []
 
-update :: Float -> GameState -> GameState
-update seconds gameState =  if (gameOver)
-                            then gameState
+atualizaJogo :: Float -> GameState -> GameState
+atualizaJogo segundos estado =  if (gameOver)
+                            then estado
                             else GameState newSnake newFood' direction newGameOver newStdGen
-    where   snake = getSnake gameState
-            food = getFood gameState
-            direction = getDirection gameState
-            gameOver = isGameOver gameState
-            stdGen = getRandomStdGen gameState
+    where   snake = getSnake estado
+            food = getFood estado
+            direction = getDirection estado
+            gameOver = isGameOver estado
+            stdGen = getRandomStdGen estado
             (wasFoodEaten, newSnake) = move food direction snake
             (newFood, newStdGen) = generateNewFood newSnake stdGen
             newFood' =  if wasFoodEaten
@@ -65,5 +59,11 @@ handleKeys (EventKey (SpecialKey KeySpace) Down _ _) gameState =    if (isGameOv
                                                                     else gameState
 handleKeys _ gameState = gameState
 
+janela :: Display
+janela = InWindow "Haskell Snake Game" (920, 640) (100, 100)
+
+fundo :: Color
+fundo = white
+
 main :: IO ()
-main = play window background 10 (initialGameState True) render handleKeys update
+main = play janela fundo 10 (initialGameState True) render handleKeys atualizaJogo
