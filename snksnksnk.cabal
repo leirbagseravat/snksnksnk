@@ -25,7 +25,10 @@ source-repository head
 
 library
   exposed-modules:
-      Lib
+      Data
+      Food
+      Snake
+      World
   other-modules:
       Paths_snksnksnk
   hs-source-dirs:
